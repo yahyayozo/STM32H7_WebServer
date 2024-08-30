@@ -162,7 +162,7 @@ SECTIONS
   	. = ABSOLUTE(0x30000080);
   	*(.TxDecripSection) ;
 	
-	. = ABSOLUTE(0x30000200);
+	. = ABSOLUTE(0x30000100);
   	*(.Rx_PoolSection) ;
   } >RAM_D2 
   /* User_heap_stack section, used to check that there is enough RAM left */
@@ -174,7 +174,7 @@ SECTIONS
     . = . + _Min_Heap_Size;
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
-  } >RAM_D1
+  } >RAM_D1 AT> FLASH
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
