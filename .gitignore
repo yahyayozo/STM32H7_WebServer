@@ -1,0 +1,46 @@
+# Idea Files
+.idea
+
+# Project Files - do not ignore the ewp file
+Debug
+Release
+*.launch
+*.ewd
+*.dep
+*.ewt
+*.cfg
+*.bak
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# application specific 
+*.sdf
+*.suo
+*.user
+
+.settings
+.metadata
+
+# firmware binary 
+CTR_FW*
+
+# VisualStudioCode 
+.vscode*
+.vscode/*
+
+# TouchGFX Files
+TouchGFX/generated
+TouchGFX/build
+TouchGFX/simulator/msvs/.vs
+TouchGFX/touchgfx
+Middlewares/ST/touchgfx
+TouchGFX/config/msvs
+TouchGFX/config/gcc
