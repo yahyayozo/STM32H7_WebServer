@@ -131,7 +131,7 @@
 #define DHCP_DEBUG LWIP_DBG_ON
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
-#define LWIP_DEBUG      LWIP_DBG_ON
+#define LWIP_DEBUG      LWIP_DBG_OFF
 #define LWIP_DBG_MIN_LEVEL LWIP_DBG_LEVEL_ALL
 
  /*----- Default Value for ETHARP_DEBUG: LWIP_DBG_OFF ---*/
@@ -153,13 +153,15 @@
  /*----- Default Value for RAW_DEBUG: LWIP_DBG_OFF ---*/
  #define RAW_DEBUG LWIP_DBG_OFF
  /*----- Default Value for SYS_DEBUG: LWIP_DBG_OFF ---*/
- #define SYS_DEBUG LWIP_DBG_ON
+ #define SYS_DEBUG LWIP_DBG_OFF
  /*----- Default Value for TCP_DEBUG: LWIP_DBG_OFF ---*/
  #define TCP_DEBUG LWIP_DBG_OFF
  /*----- Default Value for TCP_INPUT_DEBUG: LWIP_DBG_OFF ---*/
  #define TCP_INPUT_DEBUG LWIP_DBG_OFF
  /*----- Default Value for DHCP_DEBUG: LWIP_DBG_OFF ---*/
- #define DHCP_DEBUG LWIP_DBG_ON
+ #define DHCP_DEBUG LWIP_DBG_OFF
+
+#define UDP_DEBUG LWIP_DBG_ON
 
 #define ICMP_DEBUG                      LWIP_DBG_ON
 #define MEM_DEBUG                      LWIP_DBG_OFF

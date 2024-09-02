@@ -66,6 +66,26 @@ void StartDefaultTask(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void udpReceiveCallback(void *arg, struct udp_pcb *pcb, struct pbuf *p,
+    const ip_addr_t *addr, u16_t port){
+	printf("UDP receive :%s \n",p->payload);
+	udp_sendto(pcb, p,addr,port);
+}
+
+
+void UDP_Server_Init() {
+	struct udp_pcb *udpServerPcb = udp_new();
+
+	if (udpServerPcb != NULL) {
+		err_t res = udp_bind(udpServerPcb, IP4_ADDR_ANY, 2000);
+		if (ERR_OK == res) {
+			udp_recv(udpServerPcb, udpReceiveCallback, NULL);
+		} else {
+			memp_free(MEMP_UDP_PCB, udpServerPcb);
+		}
+	}
+}
+
 
 //Debug Exception and Monitor Control Register base address
 #define DEMCR        			*((volatile uint32_t*) 0xE000EDFCU )
@@ -295,6 +315,7 @@ void StartDefaultTask(void *argument)
   /* init code for LWIP */
   MX_LWIP_Init();
   /* USER CODE BEGIN 5 */
+  UDP_Server_Init();
   /* Infinite loop */
   for(;;)
   {
