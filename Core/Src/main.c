@@ -109,6 +109,11 @@ void u8_ITM_SendChar(uint8_t ch)
 	//Write to ITM stimulus port0
 	ITM_STIMULUS_PORT0 = ch;
 }
+
+void vApplicationStackOverflowHook(TaskHandle_t xTask, signed char* pcTaskName) {
+    printf("Stackoverflow!---------------------\n");
+    printf(pcTaskName);
+}
 /* USER CODE END 0 */
 
 /**
@@ -316,6 +321,8 @@ void StartDefaultTask(void *argument)
   MX_LWIP_Init();
   /* USER CODE BEGIN 5 */
   UDP_Server_Init();
+
+  http_server_netconn_init();
   /* Infinite loop */
   for(;;)
   {

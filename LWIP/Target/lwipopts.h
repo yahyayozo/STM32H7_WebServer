@@ -103,6 +103,8 @@
 #define DEFAULT_ACCEPTMBOX_SIZE 6
 /*----- Value in opt.h for RECV_BUFSIZE_DEFAULT: INT_MAX -----*/
 #define RECV_BUFSIZE_DEFAULT 2000000000
+/*----- Default Value for LWIP_HTTPD: 0 ---*/
+#define LWIP_HTTPD 1
 /*----- Value in opt.h for LWIP_STATS: 1 -----*/
 #define LWIP_STATS 0
 /*----- Value in opt.h for CHECKSUM_GEN_IP: 1 -----*/
@@ -131,7 +133,7 @@
 #define DHCP_DEBUG LWIP_DBG_ON
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
-#define LWIP_DEBUG      LWIP_DBG_OFF
+//#define LWIP_DEBUG
 #define LWIP_DBG_MIN_LEVEL LWIP_DBG_LEVEL_ALL
 
  /*----- Default Value for ETHARP_DEBUG: LWIP_DBG_OFF ---*/
