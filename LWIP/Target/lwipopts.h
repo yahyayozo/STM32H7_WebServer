@@ -54,7 +54,7 @@
 /*----- Value in opt.h for MEM_ALIGNMENT: 1 -----*/
 #define MEM_ALIGNMENT 4
 /*----- Default Value for MEM_SIZE: 1600 ---*/
-#define MEM_SIZE 10*1024
+#define MEM_SIZE 64*1024
 /*----- Default Value for H7 devices: 0x30044000 -----*/
 #define LWIP_RAM_HEAP_POINTER 0x30004000
 /*----- Value in opt.h for MEMP_NUM_SYS_TIMEOUT: (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + (PPP_SUPPORT*6*MEMP_NUM_PPP_PCB) + (LWIP_IPV6 ? (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD) : 0)) -*/
@@ -84,7 +84,7 @@
 /*----- Value in opt.h for TCPIP_THREAD_STACKSIZE: 0 -----*/
 #define TCPIP_THREAD_STACKSIZE 1024
 /*----- Value in opt.h for TCPIP_THREAD_PRIO: 1 -----*/
-#define TCPIP_THREAD_PRIO 24
+#define TCPIP_THREAD_PRIO osPriorityNormal
 /*----- Value in opt.h for TCPIP_MBOX_SIZE: 0 -----*/
 #define TCPIP_MBOX_SIZE 6
 /*----- Value in opt.h for SLIPIF_THREAD_STACKSIZE: 0 -----*/
@@ -106,7 +106,7 @@
 /*----- Default Value for LWIP_HTTPD: 0 ---*/
 #define LWIP_HTTPD 1
 /*----- Value in opt.h for LWIP_STATS: 1 -----*/
-#define LWIP_STATS 0
+#define LWIP_STATS 1
 /*----- Value in opt.h for CHECKSUM_GEN_IP: 1 -----*/
 #define CHECKSUM_GEN_IP 0
 /*----- Value in opt.h for CHECKSUM_GEN_UDP: 1 -----*/
@@ -123,23 +123,16 @@
 #define CHECKSUM_CHECK_TCP 0
 /*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
 #define CHECKSUM_CHECK_ICMP6 0
-/*----- Default Value for NETIF_DEBUG: LWIP_DBG_OFF ---*/
-#define NETIF_DEBUG LWIP_DBG_ON
-/*----- Default Value for ICMP_DEBUG: LWIP_DBG_OFF ---*/
-#define ICMP_DEBUG LWIP_DBG_ON
-/*----- Default Value for IP_DEBUG: LWIP_DBG_OFF ---*/
-#define IP_DEBUG LWIP_DBG_ON
-/*----- Default Value for DHCP_DEBUG: LWIP_DBG_OFF ---*/
-#define DHCP_DEBUG LWIP_DBG_ON
+
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
-//#define LWIP_DEBUG
+#define LWIP_DEBUG
 #define LWIP_DBG_MIN_LEVEL LWIP_DBG_LEVEL_ALL
 
  /*----- Default Value for ETHARP_DEBUG: LWIP_DBG_OFF ---*/
  #define ETHARP_DEBUG LWIP_DBG_OFF
  /*----- Default Value for NETIF_DEBUG: LWIP_DBG_OFF ---*/
- #define NETIF_DEBUG LWIP_DBG_ON
+ #define NETIF_DEBUG LWIP_DBG_OFF
  /*----- Default Value for PBUF_DEBUG: LWIP_DBG_OFF ---*/
  #define PBUF_DEBUG LWIP_DBG_OFF
  /*----- Default Value for API_LIB_DEBUG: LWIP_DBG_OFF ---*/
@@ -149,23 +142,23 @@
  /*----- Default Value for SOCKETS_DEBUG: LWIP_DBG_OFF ---*/
  #define SOCKETS_DEBUG LWIP_DBG_OFF
  /*----- Default Value for IP_DEBUG: LWIP_DBG_OFF ---*/
- #define IP_DEBUG LWIP_DBG_ON
+ #define IP_DEBUG LWIP_DBG_OFF
  /*----- Default Value for IP_REASS_DEBUG: LWIP_DBG_OFF ---*/
- #define IP_REASS_DEBUG LWIP_DBG_ON
+ #define IP_REASS_DEBUG LWIP_DBG_OFF
  /*----- Default Value for RAW_DEBUG: LWIP_DBG_OFF ---*/
  #define RAW_DEBUG LWIP_DBG_OFF
  /*----- Default Value for SYS_DEBUG: LWIP_DBG_OFF ---*/
  #define SYS_DEBUG LWIP_DBG_OFF
  /*----- Default Value for TCP_DEBUG: LWIP_DBG_OFF ---*/
- #define TCP_DEBUG LWIP_DBG_OFF
+ #define TCP_DEBUG LWIP_DBG_ON
  /*----- Default Value for TCP_INPUT_DEBUG: LWIP_DBG_OFF ---*/
- #define TCP_INPUT_DEBUG LWIP_DBG_OFF
+ #define TCP_INPUT_DEBUG LWIP_DBG_ON
  /*----- Default Value for DHCP_DEBUG: LWIP_DBG_OFF ---*/
  #define DHCP_DEBUG LWIP_DBG_OFF
 
-#define UDP_DEBUG LWIP_DBG_ON
+#define UDP_DEBUG LWIP_DBG_OFF
 
-#define ICMP_DEBUG                      LWIP_DBG_ON
+#define ICMP_DEBUG                      LWIP_DBG_OFF
 #define MEM_DEBUG                      LWIP_DBG_OFF
 #define MEMP_DEBUG                      LWIP_DBG_OFF
 /* USER CODE END 1 */

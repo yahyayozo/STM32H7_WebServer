@@ -43,13 +43,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 1024,
-  .priority = (osPriority_t) osPriorityNormal,
-};
+osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
 extern struct netif gnetif;
 /* USER CODE END PV */
@@ -58,7 +52,7 @@ extern struct netif gnetif;
 void SystemClock_Config(void);
 static void MPU_Config(void);
 static void MX_GPIO_Init(void);
-void StartDefaultTask(void *argument);
+void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -160,9 +154,6 @@ int main(void)
 
   /* USER CODE END 2 */
 
-  /* Init scheduler */
-  osKernelInitialize();
-
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -180,16 +171,13 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* definition and creation of defaultTask */
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1024);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
-
-  /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
-  /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
   osKernelStart();
@@ -315,7 +303,36 @@ int _write(int file, char *ptr, int len)
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+static void cgi_handler_function(void *arg) {
+    // You would typically get request details from the argument or context
+    // For demonstration, we assume we have access to request data
+
+    // Example of parsing or checking request details
+    char *request_method = "GET"; // Assume GET for demonstration
+
+    if (strcmp(request_method, "GET") == 0) {
+        // Handle GET request
+        const char *response_body = "<html><body><h1>Hello from GET!</h1></body></html>";
+        httpd_send_header("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", strlen(response_body));
+        httpd_send_body(response_body, strlen(response_body));
+    } else if (strcmp(request_method, "POST") == 0) {
+        // Handle POST request
+        const char *response_body = "<html><body><h1>Hello from POST!</h1></body></html>";
+        httpd_send_header("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", strlen(response_body));
+        httpd_send_body(response_body, strlen(response_body));
+    } else {
+        // Handle other methods or return a 405 Method Not Allowed
+        const char *response_body = "<html><body><h1>Method Not Allowed</h1></body></html>";
+        httpd_send_header("HTTP/1.1 405 Method Not Allowed\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", strlen(response_body));
+        httpd_send_body(response_body, strlen(response_body));
+    }
+}
+
+// Register the CGI handler
+void register_cgi_handlers(void) {
+    httpd_cgi_handler("/", cgi_handler_function);
+}
+void StartDefaultTask(void const * argument)
 {
   /* init code for LWIP */
   MX_LWIP_Init();
@@ -323,6 +340,10 @@ void StartDefaultTask(void *argument)
   UDP_Server_Init();
 
   http_server_netconn_init();
+
+  // This is for CGI -> no need for specific http thread
+  //httpd_init();
+
   /* Infinite loop */
   for(;;)
   {
@@ -342,12 +363,12 @@ void MPU_Config(void)
 
   /* Configure the MPU attributes as Device not cacheable
        for ETH DMA descriptors and for LwIP Ram heap*/
-    MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-    MPU_InitStruct.BaseAddress = 0x30000000;
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.BaseAddress = 0x30000000;
     MPU_InitStruct.Size = MPU_REGION_SIZE_256B;
-    MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
     MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
-    MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
     MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
     MPU_InitStruct.Number = MPU_REGION_NUMBER1;
     MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
@@ -360,9 +381,9 @@ void MPU_Config(void)
        for LwIP RAM heap which contains the Tx buffers */
     MPU_InitStruct.Enable = MPU_REGION_ENABLE;
     MPU_InitStruct.BaseAddress = 0x30004000;
-    MPU_InitStruct.Size = MPU_REGION_SIZE_16KB;
+    MPU_InitStruct.Size = MPU_REGION_SIZE_64KB;
     MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-    MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
     MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
     MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
     MPU_InitStruct.Number = MPU_REGION_NUMBER2;
@@ -370,10 +391,10 @@ void MPU_Config(void)
     MPU_InitStruct.SubRegionDisable = 0x00;
     MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
 
-    HAL_MPU_ConfigRegion(&MPU_InitStruct);
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
     /* Enable the MPU */
-    HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+  HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 
 }
 

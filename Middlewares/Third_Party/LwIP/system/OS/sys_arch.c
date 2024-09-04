@@ -456,7 +456,9 @@ sys_thread_t sys_thread_new(const char *name, lwip_thread_fn thread , void *arg,
 {
 #if (osCMSIS < 0x20000U)
   const osThreadDef_t os_thread_def = { (char *)name, (os_pthread)thread, (osPriority)prio, 0, stacksize};
-  return osThreadCreate(&os_thread_def, arg);
+
+  osThreadId res = osThreadCreate(&os_thread_def, arg);
+  return res;
 #else
   const osThreadAttr_t attributes = {
                         .name = name,

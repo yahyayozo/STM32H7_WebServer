@@ -34,6 +34,7 @@
 #include "cmsis_os.h"
 
 #include <stdio.h>
+#include "rest_api.h"
 
 char indexPage[] = "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/html\r\n"
@@ -187,10 +188,15 @@ static void http_server_serve(struct netconn *conn)
     {
       netbuf_data(inbuf, (void**)&buf, &buflen);
 
+	  /* Parse the HTTP request */
+      rest_api_parse_request(buf,buflen);
+
       /* Is this an HTTP GET command? (only check the first 5 chars, since
       there are other formats for GET, and we're keeping it very simple )*/
       if ((buflen >=5) && (strncmp(buf, "GET /", 5) == 0))
       {
+
+#if 1
 		if ((strncmp(buf, "GET /index.html", 15) == 0)
 				|| (strncmp(buf, "GET / ", 6) == 0)) {
 			fs_open(&file, "/index.html");
@@ -219,9 +225,13 @@ static void http_server_serve(struct netconn *conn)
 					(size_t) file.len, NETCONN_COPY);
 			fs_close(&file);
 		}
+#endif
       }
     }
   }
+
+  // Small delay before closing the connection
+  osDelay(10);
   /* Close the connection (server closes in HTTP) */
   netconn_close(conn);
 
@@ -266,8 +276,22 @@ static void http_server_netconn_thread(void *arg)
           /* delete connection */
           netconn_delete(newconn);
         }
+        osDelay(1);
       }
     }
+    else if(err == ERR_USE)
+    {
+        /* https://lwip.fandom.com/wiki/Netconn_bind
+         * ...if you try to bind the same address and/or port you might get an error (ERR_USE, address in use),
+         * even if you delete the netconn. Only after some time (minutes) the resources are completely cleared
+         * in the underlying stack due to the need to follow the TCP specification and go through the TCP timewait
+         * state.  */
+        osDelay(30000);
+    }
+  }
+  while(1)
+  {
+	  osDelay(100);
   }
 }
 
