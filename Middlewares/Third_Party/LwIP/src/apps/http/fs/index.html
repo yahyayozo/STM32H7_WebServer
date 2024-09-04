@@ -1,47 +1,99 @@
-<html>
-<head><title>lwIP - A Lightweight TCP/IP Stack</title></head>
-<body bgcolor="white" text="black">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STM32 Web Server Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 80%;
+            margin: auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+            text-align: left;
+        }
+        td {
+            text-align: left;
+        }
+    </style>
+    <script>
+        function fetchData() {
+            fetch('/data') // Adjust the endpoint as needed
+                .then(response => response.json())
+                .then(data => {
+                    renderTable(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('response').innerText = 'Error occurred while sending request.';
+                });
+        }
 
-    <table width="100%">
-      <tr valign="top"><td width="80">	  
-	  <a href="http://www.sics.se/"><img src="/img/sics.gif"
-	  border="0" alt="SICS logo" title="SICS logo"></a>
-	</td><td width="500">	  
-	  <h1>lwIP - A Lightweight TCP/IP Stack</h1>
-	  <p>
-	    The web page you are watching was served by a simple web
-	    server running on top of the lightweight TCP/IP stack <a
-	    href="http://www.sics.se/~adam/lwip/">lwIP</a>.
-	  </p>
-	  <p>
-	    lwIP is an open source implementation of the TCP/IP
-	    protocol suite that was originally written by <a
-	    href="http://www.sics.se/~adam/lwip/">Adam Dunkels
-	    of the Swedish Institute of Computer Science</a> but now is
-	    being actively developed by a team of developers
-	    distributed world-wide. Since it's release, lwIP has
-	    spurred a lot of interest and has been ported to several
-	    platforms and operating systems. lwIP can be used either
-	    with or without an underlying OS.
-	  </p>
-	  <p>
-	    The focus of the lwIP TCP/IP implementation is to reduce
-	    the RAM usage while still having a full scale TCP. This
-	    makes lwIP suitable for use in embedded systems with tens
-	    of kilobytes of free RAM and room for around 40 kilobytes
-	    of code ROM.
-	  </p>
-	  <p>
-	    More information about lwIP can be found at the lwIP
-	    homepage at <a
-	    href="http://savannah.nongnu.org/projects/lwip/">http://savannah.nongnu.org/projects/lwip/</a>
-	    or at the lwIP wiki at <a
-	    href="http://lwip.wikia.com/">http://lwip.wikia.com/</a>.
-	  </p>
-	</td><td>
-	  &nbsp;
-	</td></tr>
-      </table>
+        function renderTable(data) {
+            // Check if data is an array
+            if (!Array.isArray(data)) {
+                document.getElementById('response').innerText = 'Unexpected data format';
+                return;
+            }
+
+            const table = document.createElement('table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+            
+            // Create table headers
+            if (data.length > 0) {
+                const headerRow = document.createElement('tr');
+                Object.keys(data[0]).forEach(key => {
+                    const th = document.createElement('th');
+                    th.innerText = key;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+            }
+
+            // Create table rows
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                Object.values(item).forEach(value => {
+                    const td = document.createElement('td');
+                    td.innerText = value;
+                    row.appendChild(td);
+                });
+                tbody.appendChild(row);
+            });
+
+            table.appendChild(thead);
+            table.appendChild(tbody);
+
+            // Clear previous content and append new table
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = ''; // Clear previous content
+            responseDiv.appendChild(table);
+        }
+    </script>
+</head>
+<body>
+    <h1>STM32 Web Server Data</h1>
+    <p>Click the button below to fetch data from the STM32 web server and display it in a table.</p>
+    <button onclick="fetchData()">Fetch Data</button>
+    <div id="response"></div>
 </body>
 </html>
-

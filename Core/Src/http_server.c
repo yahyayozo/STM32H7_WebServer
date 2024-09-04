@@ -35,6 +35,12 @@
 
 #include <stdio.h>
 
+char indexPage[] = "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: 17\r\n"
+        "\r\n"
+        "<h2>Hi</h2>";
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define WEBSERVER_THREAD_PRIO    ( osPriorityAboveNormal )
@@ -156,6 +162,13 @@ static const unsigned char PAGE_START[] = {
   * @param conn: pointer on connection structure
   * @retval None
   */
+
+uint8_t resp[] = "["
+"{	\"Name\": \"Alice\", \"Age\": 30, \"City\": \"New York\"},"
+"{	\"Name\": \"Bob\", \"Age\": 25, \"City\": \"Los Angeles\"},"
+"{	\"Name\": \"Charlie\", \"Age\": 35, \"City\": \"Chicago\"}"
+"]";
+
 static void http_server_serve(struct netconn *conn)
 {
   struct netbuf *inbuf;
@@ -178,20 +191,34 @@ static void http_server_serve(struct netconn *conn)
       there are other formats for GET, and we're keeping it very simple )*/
       if ((buflen >=5) && (strncmp(buf, "GET /", 5) == 0))
       {
-    	if((strncmp(buf, "GET /index.html", 15) == 0)||(strncmp(buf, "GET / ", 6) == 0))
-        {
-          /* Load STM32H7xx page */
-          fs_open(&file, "/index.html");
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_COPY);
-          fs_close(&file);
-        }
-        else
-        {
-          /* Load Error page */
-          fs_open(&file, "/404.html");
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
-          fs_close(&file);
-        }
+		if ((strncmp(buf, "GET /index.html", 15) == 0)
+				|| (strncmp(buf, "GET / ", 6) == 0)) {
+			fs_open(&file, "/index.html");
+			netconn_write(conn, (const unsigned char*) (file.data),
+					(size_t) file.len, NETCONN_COPY);
+			fs_close(&file);
+
+		} else if (strncmp(buf, "GET /img/sics.gif", 17) == 0) {
+			/* Load Error page */
+			fs_open(&file, "/img/sics.gif");
+			netconn_write(conn, (const unsigned char*) (file.data),
+					(size_t) file.len, NETCONN_COPY);
+			fs_close(&file);
+		}else if (strncmp(buf, "GET /data", 9) == 0) {
+			/* Load Error page */
+
+			//memset(resp,0,sizeof(resp));
+			//uint32_t resp_len = sprintf(resp,"%d",HAL_GetTick());
+			netconn_write(conn, (const unsigned char*) (resp),
+					(size_t) strlen(resp), NETCONN_COPY);
+		}
+		else {
+			/* Load Error page */
+			fs_open(&file, "/404.html");
+			netconn_write(conn, (const unsigned char*) (file.data),
+					(size_t) file.len, NETCONN_COPY);
+			fs_close(&file);
+		}
       }
     }
   }
