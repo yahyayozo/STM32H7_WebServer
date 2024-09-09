@@ -3,97 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STM32 Web Server Data</title>
+    <title>STM32 Peripheral Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+        }
+        .side-menu {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            transition: width 0.3s;
+        }
+        .side-menu:hover {
+            width: 300px;
+        }
+        .side-menu h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .side-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+        .side-menu ul li {
+            margin-bottom: 10px;
+        }
+        .side-menu ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s, padding-left 0.3s;
+        }
+        .side-menu ul li a:hover {
+            background-color: #575757;
+            padding-left: 20px;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            overflow-y: auto;
+        }
+        header {
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+        .dashboard-section {
+            display: none;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
         }
         button {
+            background-color: #007bff;
+            border: none;
+            color: white;
             padding: 10px 20px;
             font-size: 16px;
-            margin: 10px;
             cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
         }
-        table {
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        p {
+            font-size: 18px;
+        }
+        span {
+            font-weight: bold;
+        }
+        .home-image {
+            max-width: 100%;
+            height: auto;
             margin-top: 20px;
-            border-collapse: collapse;
-            width: 80%;
-            margin: auto;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f4f4f4;
-            text-align: left;
-        }
-        td {
-            text-align: left;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
     </style>
     <script>
-        function fetchData() {
-            fetch('/data') // Adjust the endpoint as needed
-                .then(response => response.json())
-                .then(data => {
-                    renderTable(data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('response').innerText = 'Error occurred while sending request.';
+        async function sendCommand(endpoint, data = {}) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
                 });
+                return await response.json();
+            } catch (error) {
+                console.error('Error sending command:', error);
+            }
         }
-
-        function renderTable(data) {
-            // Check if data is an array
-            if (!Array.isArray(data)) {
-                document.getElementById('response').innerText = 'Unexpected data format';
-                return;
-            }
-
-            const table = document.createElement('table');
-            const thead = document.createElement('thead');
-            const tbody = document.createElement('tbody');
-            
-            // Create table headers
-            if (data.length > 0) {
-                const headerRow = document.createElement('tr');
-                Object.keys(data[0]).forEach(key => {
-                    const th = document.createElement('th');
-                    th.innerText = key;
-                    headerRow.appendChild(th);
-                });
-                thead.appendChild(headerRow);
-            }
-
-            // Create table rows
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                Object.values(item).forEach(value => {
-                    const td = document.createElement('td');
-                    td.innerText = value;
-                    row.appendChild(td);
-                });
-                tbody.appendChild(row);
+        async function sendUARTCommand() {
+            const command = document.getElementById('uart-command').value;
+            const result = await sendCommand('/uart', { command });
+            document.getElementById('uart-response').textContent = result.response;
+        }
+        async function readADC() {
+            const result = await sendCommand('/adc');
+            document.getElementById('adc-value').textContent = result.value;
+        }
+        async function toggleGPIO(gpio) {
+            const result = await sendCommand(`/gpio/${gpio}`);
+            document.getElementById(`gpio-${gpio}`).textContent = result.status;
+        }
+        async function sendSPICommand() {
+            const command = document.getElementById('spi-command').value;
+            const result = await sendCommand('/spi', { command });
+            document.getElementById('spi-response').textContent = result.response;
+        }
+        async function sendI2CCommand() {
+            const address = document.getElementById('i2c-address').value;
+            const data = document.getElementById('i2c-data').value;
+            const result = await sendCommand('/i2c', { address, data });
+            document.getElementById('i2c-response').textContent = result.response;
+        }
+        function showSection(sectionId) {
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.style.display = 'none';
             });
-
-            table.appendChild(thead);
-            table.appendChild(tbody);
-
-            // Clear previous content and append new table
-            const responseDiv = document.getElementById('response');
-            responseDiv.innerHTML = ''; // Clear previous content
-            responseDiv.appendChild(table);
+            document.getElementById(sectionId).style.display = 'block';
         }
+        window.onload = () => {
+            showSection('home');
+        };
     </script>
 </head>
 <body>
-    <h1>STM32 Web Server Data</h1>
-    <p>Click the button below to fetch data from the STM32 web server and display it in a table.</p>
-    <button onclick="fetchData()">Fetch Data</button>
-    <div id="response"></div>
+    <div class="container">
+        <aside class="side-menu">
+            <h2>Dashboard</h2>
+            <ul>
+                <li><a href="#" onclick="showSection('home')">Home</a></li>
+                <li><a href="#" onclick="showSection('uart')">UART Communication</a></li>
+                <li><a href="#" onclick="showSection('adc')">ADC Readings</a></li>
+                <li><a href="#" onclick="showSection('gpio')">GPIO Control</a></li>
+                <li><a href="#" onclick="showSection('spi')">SPI Communication</a></li>
+                <li><a href="#" onclick="showSection('i2c')">I2C Communication</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <header>
+                <h1>STM32 Peripheral Dashboard</h1>
+            </header>
+            <div id="home" class="dashboard-section">
+                <h2>Welcome to STM32 Peripheral Dashboard</h2>
+                <img src="https://media.distrelec.com/Web/WebShopImages/landscape_large/8-/01/ST%20Microelectronics-NUCLEO-F207ZG-30176548-01.jpg" alt="STM32 Nucleo Board" class="home-image">
+            </div>
+            <div id="uart" class="dashboard-section">
+                <h2>UART Communication</h2>
+                <textarea id="uart-command" placeholder="Enter UART command"></textarea>
+                <button onclick="sendUARTCommand()">Send UART Command</button>
+                <p>Response: <span id="uart-response">No response yet</span></p>
+            </div>
+            <div id="adc" class="dashboard-section">
+                <h2>ADC Readings</h2>
+                <button onclick="readADC()">Read ADC Value</button>
+                <p>ADC Value: <span id="adc-value">No data yet</span></p>
+            </div>
+            <div id="gpio" class="dashboard-section">
+                <h2>GPIO Control</h2>
+                <button onclick="toggleGPIO(1)">Toggle GPIO 1</button>
+                <p>GPIO 1 Status: <span id="gpio-1">Unknown</span></p>
+                <button onclick="toggleGPIO(2)">Toggle GPIO 2</button>
+                <p>GPIO 2 Status: <span id="gpio-2">Unknown</span></p>
+                <button onclick="toggleGPIO(3)">Toggle GPIO 3</button>
+                <p>GPIO 3 Status: <span id="gpio-3">Unknown</span></p>
+            </div>
+            <div id="spi" class="dashboard-section">
+                <h2>SPI Communication</h2>
+                <input type="text" id="spi-command" placeholder="Enter SPI command">
+                <button onclick="sendSPICommand()">Send SPI Command</button>
+                <p>Response: <span id="spi-response">No response yet</span></p>
+            </div>
+            <div id="i2c" class="dashboard-section">
+                <h2>I2C Communication</h2>
+                <input type="text" id="i2c-address" placeholder="Enter I2C address">
+                <input type="text" id="i2c-data" placeholder="Enter I2C data">
+                <button onclick="sendI2CCommand()">Send I2C Command</button>
+                <p>Response: <span id="i2c-response">No response yet</span></p>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

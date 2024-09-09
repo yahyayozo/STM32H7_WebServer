@@ -193,9 +193,6 @@ static void http_server_serve(struct netconn *conn)
 
       /* Is this an HTTP GET command? (only check the first 5 chars, since
       there are other formats for GET, and we're keeping it very simple )*/
-      if ((buflen >=5) && (strncmp(buf, "GET /", 5) == 0))
-      {
-
 #if 1
 		if ((strncmp(buf, "GET /index.html", 15) == 0)
 				|| (strncmp(buf, "GET / ", 6) == 0)) {
@@ -210,11 +207,23 @@ static void http_server_serve(struct netconn *conn)
 			netconn_write(conn, (const unsigned char*) (file.data),
 					(size_t) file.len, NETCONN_COPY);
 			fs_close(&file);
-		}else if (strncmp(buf, "GET /data", 9) == 0) {
+		}else if (strncmp(buf, "GET /styles.css", 15) == 0) {
+			/* Load style css */
+			fs_open(&file, "/styles.css");
+			netconn_write(conn, (const unsigned char*) (file.data),
+					(size_t) file.len, NETCONN_COPY);
+			fs_close(&file);
+		}
+		else if (strncmp(buf, "POST /led/2", 11) == 0) {
 			/* Load Error page */
-
-			//memset(resp,0,sizeof(resp));
-			//uint32_t resp_len = sprintf(resp,"%d",HAL_GetTick());
+			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+			memset(resp,0,sizeof(resp));
+			uint32_t resp_len ;
+			if(HAL_GPIO_ReadPin(LD2_GPIO_Port, LD2_Pin)){
+				resp_len = sprintf(resp,"{ \"status\" :  \"on\"}");
+			}else{
+				resp_len = sprintf(resp,"{ \"status\" : \"off\"}");
+			}
 			netconn_write(conn, (const unsigned char*) (resp),
 					(size_t) strlen(resp), NETCONN_COPY);
 		}
@@ -226,12 +235,11 @@ static void http_server_serve(struct netconn *conn)
 			fs_close(&file);
 		}
 #endif
-      }
     }
   }
 
   // Small delay before closing the connection
-  osDelay(10);
+  osDelay(100);
   /* Close the connection (server closes in HTTP) */
   netconn_close(conn);
 

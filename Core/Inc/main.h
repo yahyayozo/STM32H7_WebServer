@@ -59,7 +59,14 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-
+#define B1_Pin GPIO_PIN_13
+#define B1_GPIO_Port GPIOC
+#define LD1_Pin GPIO_PIN_0
+#define LD1_GPIO_Port GPIOB
+#define LD3_Pin GPIO_PIN_14
+#define LD3_GPIO_Port GPIOB
+#define LD2_Pin GPIO_PIN_1
+#define LD2_GPIO_Port GPIOE
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
