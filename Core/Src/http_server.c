@@ -49,6 +49,7 @@ char indexPage[] = "HTTP/1.1 200 OK\r\n"
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 u32_t nPageHits = 0;
+struct fs_file file;
 
 /* Format of dynamic web page: the page header */
 static const unsigned char PAGE_START[] = {
@@ -176,7 +177,7 @@ static void http_server_serve(struct netconn *conn)
   err_t recv_err;
   char* buf;
   u16_t buflen;
-  struct fs_file file;
+
 
   /* Read the data from the port, blocking if nothing yet there.
    We assume the request (the part we care about) is in one netbuf */
@@ -188,12 +189,20 @@ static void http_server_serve(struct netconn *conn)
     {
       netbuf_data(inbuf, (void**)&buf, &buflen);
 
-	  /* Parse the HTTP request */
-      rest_api_parse_request(buf,buflen);
+      HTTP_Request httpRequest = {0};
+      HTTP_Response httpResponse = {0};
+
+      /* Parse the HTTP request */
+      rest_api_parse_request(buf,buflen,&httpRequest);
+
+      rest_api_call_endpoint(&httpRequest,&httpResponse);
+
+      netconn_write(conn, (const unsigned char*) httpResponse.body,
+      					(size_t) httpResponse.bodyLen, NETCONN_COPY);
 
       /* Is this an HTTP GET command? (only check the first 5 chars, since
       there are other formats for GET, and we're keeping it very simple )*/
-#if 1
+#if 0
 		if ((strncmp(buf, "GET /index.html", 15) == 0)
 				|| (strncmp(buf, "GET / ", 6) == 0)) {
 			fs_open(&file, "/index.html");
@@ -303,6 +312,15 @@ static void http_server_netconn_thread(void *arg)
   }
 }
 
+void http_server_handle_index (HTTP_Request* http_request,HTTP_Response* http_response){
+
+	fs_open(&file, "/index.html");
+	http_response->body = file.data;
+	http_response->bodyLen = strlen(file.data);
+	fs_close(&file);
+
+}
+
 /**
   * @brief  Initialize the HTTP server (start its thread)
   * @param  none
@@ -310,6 +328,8 @@ static void http_server_netconn_thread(void *arg)
   */
 void http_server_netconn_init()
 {
+  rest_api_register_endpoint_callback(HTTP_METHOD_GET, "/", http_server_handle_index);
+
   sys_thread_new("HTTP", http_server_netconn_thread, NULL, DEFAULT_THREAD_STACKSIZE, WEBSERVER_THREAD_PRIO);
 }
 
