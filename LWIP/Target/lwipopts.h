@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * File Name          : Target/lwipopts.h
-  * Description        : This file overrides LwIP stack default configuration
-  *                      done in opt.h file.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * File Name          : Target/lwipopts.h
+ * Description        : This file overrides LwIP stack default configuration
+ *                      done in opt.h file.
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion --------------------------------------*/
@@ -129,32 +129,34 @@
 #define LWIP_DEBUG
 #define LWIP_DBG_MIN_LEVEL LWIP_DBG_LEVEL_ALL
 
- /*----- Default Value for ETHARP_DEBUG: LWIP_DBG_OFF ---*/
- #define ETHARP_DEBUG LWIP_DBG_OFF
- /*----- Default Value for NETIF_DEBUG: LWIP_DBG_OFF ---*/
- #define NETIF_DEBUG LWIP_DBG_OFF
- /*----- Default Value for PBUF_DEBUG: LWIP_DBG_OFF ---*/
- #define PBUF_DEBUG LWIP_DBG_OFF
- /*----- Default Value for API_LIB_DEBUG: LWIP_DBG_OFF ---*/
- #define API_LIB_DEBUG LWIP_DBG_OFF
- /*----- Default Value for API_MSG_DEBUG: LWIP_DBG_OFF ---*/
- #define API_MSG_DEBUG LWIP_DBG_OFF
- /*----- Default Value for SOCKETS_DEBUG: LWIP_DBG_OFF ---*/
- #define SOCKETS_DEBUG LWIP_DBG_OFF
- /*----- Default Value for IP_DEBUG: LWIP_DBG_OFF ---*/
- #define IP_DEBUG LWIP_DBG_OFF
- /*----- Default Value for IP_REASS_DEBUG: LWIP_DBG_OFF ---*/
- #define IP_REASS_DEBUG LWIP_DBG_OFF
- /*----- Default Value for RAW_DEBUG: LWIP_DBG_OFF ---*/
- #define RAW_DEBUG LWIP_DBG_OFF
- /*----- Default Value for SYS_DEBUG: LWIP_DBG_OFF ---*/
- #define SYS_DEBUG LWIP_DBG_OFF
- /*----- Default Value for TCP_DEBUG: LWIP_DBG_OFF ---*/
- #define TCP_DEBUG LWIP_DBG_ON
- /*----- Default Value for TCP_INPUT_DEBUG: LWIP_DBG_OFF ---*/
- #define TCP_INPUT_DEBUG LWIP_DBG_ON
- /*----- Default Value for DHCP_DEBUG: LWIP_DBG_OFF ---*/
- #define DHCP_DEBUG LWIP_DBG_OFF
+#define LWIP_NETIF_HOSTNAME 1
+
+/*----- Default Value for ETHARP_DEBUG: LWIP_DBG_OFF ---*/
+#define ETHARP_DEBUG LWIP_DBG_OFF
+/*----- Default Value for NETIF_DEBUG: LWIP_DBG_OFF ---*/
+#define NETIF_DEBUG LWIP_DBG_OFF
+/*----- Default Value for PBUF_DEBUG: LWIP_DBG_OFF ---*/
+#define PBUF_DEBUG LWIP_DBG_OFF
+/*----- Default Value for API_LIB_DEBUG: LWIP_DBG_OFF ---*/
+#define API_LIB_DEBUG LWIP_DBG_OFF
+/*----- Default Value for API_MSG_DEBUG: LWIP_DBG_OFF ---*/
+#define API_MSG_DEBUG LWIP_DBG_OFF
+/*----- Default Value for SOCKETS_DEBUG: LWIP_DBG_OFF ---*/
+#define SOCKETS_DEBUG LWIP_DBG_OFF
+/*----- Default Value for IP_DEBUG: LWIP_DBG_OFF ---*/
+#define IP_DEBUG LWIP_DBG_OFF
+/*----- Default Value for IP_REASS_DEBUG: LWIP_DBG_OFF ---*/
+#define IP_REASS_DEBUG LWIP_DBG_OFF
+/*----- Default Value for RAW_DEBUG: LWIP_DBG_OFF ---*/
+#define RAW_DEBUG LWIP_DBG_OFF
+/*----- Default Value for SYS_DEBUG: LWIP_DBG_OFF ---*/
+#define SYS_DEBUG LWIP_DBG_OFF
+/*----- Default Value for TCP_DEBUG: LWIP_DBG_OFF ---*/
+#define TCP_DEBUG LWIP_DBG_ON
+/*----- Default Value for TCP_INPUT_DEBUG: LWIP_DBG_OFF ---*/
+#define TCP_INPUT_DEBUG LWIP_DBG_ON
+/*----- Default Value for DHCP_DEBUG: LWIP_DBG_OFF ---*/
+#define DHCP_DEBUG LWIP_DBG_OFF
 
 #define UDP_DEBUG LWIP_DBG_OFF
 
