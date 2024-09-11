@@ -312,13 +312,14 @@ static void http_server_netconn_thread(void *arg)
   }
 }
 
-void http_server_handle_index (HTTP_Request* http_request,HTTP_Response* http_response){
+REST_API_Error http_server_handle_index (HTTP_Request* http_request,HTTP_Response* http_response){
 
 	fs_open(&file, "/index.html");
 	http_response->body = file.data;
 	http_response->bodyLen = strlen(file.data);
 	fs_close(&file);
 
+	return REST_API_OK;
 }
 
 /**
@@ -328,7 +329,7 @@ void http_server_handle_index (HTTP_Request* http_request,HTTP_Response* http_re
   */
 void http_server_netconn_init()
 {
-  rest_api_register_endpoint_callback(HTTP_METHOD_GET, "/", http_server_handle_index);
+  rest_api_register_endpoint_callback(HTTP_METHOD_GET, "/", http_server_handle_index,NULL);
 
   sys_thread_new("HTTP", http_server_netconn_thread, NULL, DEFAULT_THREAD_STACKSIZE, WEBSERVER_THREAD_PRIO);
 }

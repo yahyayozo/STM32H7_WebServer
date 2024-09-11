@@ -10,29 +10,33 @@
 
 Rest_API_Endpoint API_Endpoints[REST_API_MAX_ENDPOINTS];
 
-void rest_api_parse_request(uint8_t *request_buf, uint32_t request_buf_len,
+REST_API_Error rest_api_parse_request(uint8_t *request_buf, uint32_t request_buf_len,
 		HTTP_Request *http_request) {
 	char method[10] = { 0 };
 	memset(http_request, 0, sizeof(http_request));
 	sscanf(request_buf, "%s %s", method, http_request->URI);
 
-	if (0 == strcmp(method, "GET")) {
+	if (0 == strcmp(method, HTTP_GET)) {
 		http_request->method = HTTP_METHOD_GET;
-	} else if (0 == strcmp(method, "POST")) {
+	} else if (0 == strcmp(method, HTTP_POST)) {
 		http_request->method = HTTP_METHOD_POST;
-	} else if (0 == strcmp(method, "UPDATE")) {
+	} else if (0 == strcmp(method, HTTP_UPDATE)) {
 		http_request->method = HTTP_METHOD_UPDATE;
-	} else if (0 == strcmp(method, "DELETE")) {
+	} else if (0 == strcmp(method, HTTP_DELETE)) {
 		http_request->method = HTTP_METHOD_DELETE;
+	} else{
+		return REST_API_UNCORRECT_METHOD;
 	}
+
+	return REST_API_OK;
 
 }
 
-void rest_api_register_endpoint_callback(HTTP_MethodType method, char *uri,
-		rest_api_request_clb request_clb) {
+REST_API_Error rest_api_register_endpoint_callback(HTTP_MethodType method, char *uri,
+		rest_api_request_clb request_clb,uint16_t *entryIndex) {
 
 	if (NULL == request_clb) {
-		// TODO : return error
+		return REST_API_NULL_CALLBACK;
 	}
 
 	for (uint16_t i = 0; i < REST_API_MAX_ENDPOINTS; i++) {
@@ -40,14 +44,17 @@ void rest_api_register_endpoint_callback(HTTP_MethodType method, char *uri,
 			API_Endpoints[i].methodType = method;
 			strcpy(API_Endpoints[i].URI, uri);
 			API_Endpoints[i].callback = request_clb;
-			// TODO : the user should get the index of the entry so he can delete it later
+			if(NULL != entryIndex){
+				*entryIndex = i;
+			}
+			return REST_API_OK;
 		}
 	}
 
-	//TODO : return no empty entry error
+	return REST_API_NO_SPACE;
 }
 
-void rest_api_call_endpoint(const HTTP_Request *http_request,
+REST_API_Error rest_api_call_endpoint(const HTTP_Request *http_request,
 		HTTP_Response *http_response) {
 	for (uint16_t i = 0; i < REST_API_MAX_ENDPOINTS; i++) {
 		if (http_request->method == API_Endpoints[i].methodType
@@ -57,5 +64,7 @@ void rest_api_call_endpoint(const HTTP_Request *http_request,
 			}
 		}
 	}
+
+	return REST_API_NO_REGISTERED_ENDPOINT;
 }
-// TODO: return error no callback registered
+
