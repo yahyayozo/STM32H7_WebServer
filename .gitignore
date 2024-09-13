@@ -44,3 +44,5 @@ TouchGFX/touchgfx
 Middlewares/ST/touchgfx
 TouchGFX/config/msvs
 TouchGFX/config/gcc
+
+Middlewares/Third_Party/LwIP/src/apps/http/fsdata.c

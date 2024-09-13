@@ -27,6 +27,8 @@ typedef struct {
 } HTTP_Request;
 
 typedef struct {
+	char headers[1024];
+	uint32_t headersLen;
 	char *body;
 	uint32_t bodyLen;
 } HTTP_Response;

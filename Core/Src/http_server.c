@@ -42,6 +42,9 @@ char indexPage[] = "HTTP/1.1 200 OK\r\n"
         "\r\n"
         "<h2>Hi</h2>";
 
+HTTP_Request httpRequest = {0};
+HTTP_Response httpResponse = {0};
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define WEBSERVER_THREAD_PRIO    ( osPriorityAboveNormal )
@@ -171,6 +174,9 @@ uint8_t resp[] = "["
 "{	\"Name\": \"Charlie\", \"Age\": 35, \"City\": \"Chicago\"}"
 "]";
 
+char headers[1024];
+char contentLength[30] = {0};
+
 static void http_server_serve(struct netconn *conn)
 {
   struct netbuf *inbuf;
@@ -189,16 +195,20 @@ static void http_server_serve(struct netconn *conn)
     {
       netbuf_data(inbuf, (void**)&buf, &buflen);
 
-      HTTP_Request httpRequest = {0};
-      HTTP_Response httpResponse = {0};
 
       /* Parse the HTTP request */
       rest_api_parse_request(buf,buflen,&httpRequest);
 
-      rest_api_call_endpoint(&httpRequest,&httpResponse);
+      if (REST_API_OK == rest_api_call_endpoint(&httpRequest,&httpResponse)){
+		 /* netconn_write(conn, (const unsigned char*) indexPage,
+									(size_t) sizeof(indexPage), NETCONN_COPY);*/
 
-      netconn_write(conn, (const unsigned char*) httpResponse.body,
-      					(size_t) httpResponse.bodyLen, NETCONN_COPY);
+		  netconn_write(conn, (const unsigned char*) httpResponse.headers,
+										(size_t) httpResponse.headersLen, NETCONN_COPY);
+
+		  netconn_write(conn, (const unsigned char*) httpResponse.body,
+							(size_t) httpResponse.bodyLen, NETCONN_COPY);
+      }
 
       /* Is this an HTTP GET command? (only check the first 5 chars, since
       there are other formats for GET, and we're keeping it very simple )*/
@@ -248,7 +258,7 @@ static void http_server_serve(struct netconn *conn)
   }
 
   // Small delay before closing the connection
-  osDelay(100);
+  //osDelay(100);
   /* Close the connection (server closes in HTTP) */
   netconn_close(conn);
 
@@ -314,9 +324,18 @@ static void http_server_netconn_thread(void *arg)
 
 REST_API_Error http_server_handle_index (HTTP_Request* http_request,HTTP_Response* http_response){
 
+	memset(http_response->headers, 0, sizeof(http_response->headers));
+
 	fs_open(&file, "/index.html");
+	strcpy(http_response->headers, "HTTP/1.1 200 OK\r\n");
+	uint32_t index = strlen(http_response->headers);
+	sprintf(&http_response->headers[index], "Content-Length: %d\r\n"
+			"Content-Encoding: gzip\r\n"
+			"Content-Type: text/html\r\n\r\n", file.len);
+	http_response->headersLen = strlen(http_response->headers);
 	http_response->body = file.data;
-	http_response->bodyLen = strlen(file.data);
+	http_response->bodyLen = file.len;
+
 	fs_close(&file);
 
 	return REST_API_OK;
