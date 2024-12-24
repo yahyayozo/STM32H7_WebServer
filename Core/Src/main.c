@@ -336,35 +336,6 @@ int _write(int file, char *ptr, int len)
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
-static void cgi_handler_function(void *arg) {
-    // You would typically get request details from the argument or context
-    // For demonstration, we assume we have access to request data
-
-    // Example of parsing or checking request details
-    char *request_method = "GET"; // Assume GET for demonstration
-
-    if (strcmp(request_method, "GET") == 0) {
-        // Handle GET request
-        const char *response_body = "<html><body><h1>Hello from GET!</h1></body></html>";
-        httpd_send_header("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", strlen(response_body));
-        httpd_send_body(response_body, strlen(response_body));
-    } else if (strcmp(request_method, "POST") == 0) {
-        // Handle POST request
-        const char *response_body = "<html><body><h1>Hello from POST!</h1></body></html>";
-        httpd_send_header("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", strlen(response_body));
-        httpd_send_body(response_body, strlen(response_body));
-    } else {
-        // Handle other methods or return a 405 Method Not Allowed
-        const char *response_body = "<html><body><h1>Method Not Allowed</h1></body></html>";
-        httpd_send_header("HTTP/1.1 405 Method Not Allowed\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n", strlen(response_body));
-        httpd_send_body(response_body, strlen(response_body));
-    }
-}
-
-// Register the CGI handler
-void register_cgi_handlers(void) {
-    httpd_cgi_handler("/", cgi_handler_function);
-}
 void StartDefaultTask(void const * argument)
 {
   /* init code for LWIP */

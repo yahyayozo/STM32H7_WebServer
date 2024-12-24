@@ -258,7 +258,7 @@ static void http_server_serve(struct netconn *conn)
   }
 
   // Small delay before closing the connection
-  //osDelay(100);
+  osDelay(100);
   /* Close the connection (server closes in HTTP) */
   netconn_close(conn);
 
