@@ -24,7 +24,7 @@ This project demonstrates a webserver implementation on the STM32H7 microcontrol
 Place your web files into the `Middlewares/Third_Party/LwIP/src/apps/http/fs/` folder.
 
 2. **Pre-build Script**
-Ensure the `makeFSdata.py` script is executable and properly configured in your build environment to run as a pre-build step.
+Ensure the `makeFSdata.py` script is executable and properly configured in your build environment to run as a pre-build step. (You can check it in its repo [here](https://github.com/yahyayozo/MakeFSData))
 
 3. **Build and Flash**
 Compile the project using your STM32 development environment and flash it onto the STM32H7 board.
